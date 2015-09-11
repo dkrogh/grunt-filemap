@@ -16,47 +16,45 @@ module.exports = function(grunt) {
       crawlDir: this.data.options.crawlDir,
       outputPath: this.data.options.outputPath
     });
+        create(options[arg])
 
-    var done = this.async();
-    create();
-    function create() {
-      var fs = require('fs');
-      var path = require('path');
+		function create(options) {
+			var fs = require('fs');
+			var path = require('path');
 
-      function dirTree(filename) {
-        var stats = fs.lstatSync(filename)
-        var fileinfo = {
-          path: filename,
-          name: path.basename(filename)
-        };
+			function dirTree(filename) {
+				var stats = fs.lstatSync(filename)
+				var fileinfo = {
+					path: filename,
+					name: path.basename(filename)
+				};
 
-        if (stats.isDirectory()) {
+				if (stats.isDirectory()) {
 
-          fileinfo.type = "folder";
-          fileinfo.children = fs.readdirSync(filename).map(function(child) {
-            return dirTree(filename + '/' + child);
-          });
+					fileinfo.type = "folder";
+					fileinfo.children = fs.readdirSync(filename).map(function(child) {
+						return dirTree(filename + '/' + child);
+					});
 
-        } else {
+				} else {
 
-          fileinfo.type = "file";
+					fileinfo.type = "file";
 
-        }
+				}
 
-        return fileinfo;
-      }
+				return fileinfo;
+			}
 
-      var dir = dirTree(options.crawlPath);
+			var dir = dirTree(options.crawlPath);
 
-      var sitemapPath = path.join(options.outputPath, 'fileindex.json');
+			var sitemapPath = path.join(options.outputPath, 'fileindex.json');
 
-      grunt.file.write(sitemapPath, JSON.stringify(dir));
+			grunt.file.write(sitemapPath, JSON.stringify(dir));
 
-      grunt.log.writeln('fileindex.json has been created');
+			grunt.log.writeln('fileindex.json has been created');
+		}
 
-      done();
-    }
-
-  });
-
+	});
 };
+
+
